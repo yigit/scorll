@@ -64,7 +64,7 @@ dojo.declare("scorll.asset.Poll", [
         //clear dom
         dojo.empty(asset.domNode);
         
-        var title = dojo.string.substitute("<div>${0}  (${1} total vote${2})</div>", [data.question, this._voteCnt, this._voteCnt > 1 ? 's' : '']);
+        var title = dojo.string.substitute("<div>${0}  (${1} total vote${2})</div>", [data.question, this._voteCnt, this._voteCnt == 1 ? '' : 's']);
         dojo.place(title,asset.domNode, "first");
         var myVote = asset.user.id ? this._userIdVoteHash[asset.user.id] : undefined;
         data.options = data.options || {};
