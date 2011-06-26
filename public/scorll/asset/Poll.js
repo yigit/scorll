@@ -69,15 +69,21 @@ dojo.declare("scorll.asset.Poll", [
         var myVote = asset.user.id ? this._userIdVoteHash[asset.user.id] : undefined;
         data.options = data.options || {};
         
+        var cnt = 1;
         dojo.forEach(data.options, function(option) {
-            var id = ("interaction-" + asset.item.id + "-" + option).replace(' ','_');
-            var name = ("interaction-" + asset.item.id).replace(' ','_');
+            var id = ("interaction-" + asset.item.id + "-" + cnt).replace(' ','_');
+            var name = ("interaction-name-" + asset.item.id + "-" + cnt).replace(' ','_');
+            cnt ++;
 
-            var html = dojo.string.substitute('<p><label for="${0}">${1} ${3}% (${2})</label></p>', [id, option, asset.getOptionValue(option), asset.getOptionRatio(option)]);
+            var voteStats = myVote !== undefined ? dojo.string.substitute('${1}% (${0})', [asset.getOptionValue(option), asset.getOptionRatio(option)]) : "";
+            var html = dojo.string.substitute('<p><label for="${0}">${1} ${2}</label></p>', [id, option, voteStats]);
             var p = dojo.place(html, asset.domNode);
             html = dojo.string.substitute('<input name="${2}" type="radio" id="${0}" value="${1}" ${3} ${4}/>', [id, option, name, myVote == option ? "checked" : "", myVote ? "disabled" : ""]);
             var input = dojo.place(html, p, "first");
             myVote === undefined && dojo.connect(input, "change", function() {
+                if (myVote !== undefined) {
+                    return;
+                }
                 var params = {
                     type: asset.TRACKING_TYPE.LIKERT,
                     response: option
