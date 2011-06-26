@@ -69,34 +69,24 @@ dojo.declare("scorll.asset.Poll", [
         var myVote = asset.user.id ? this._userIdVoteHash[asset.user.id] : undefined;
         data.options = data.options || {};
         
-        if(myVote !== undefined) {
-            var html = "<ul>";
-            dojo.forEach(data.options, function(option) {
-                html += dojo.string.substitute("<li>${0} ${2}% (${1})</li>",[option, asset.getOptionValue(option), asset.getOptionRatio(option)]);
-            });
-            html += "</ul>";
-            dojo.place(html, asset.domNode);
-        } else {
-            dojo.forEach(data.options, function(option) {
-                var id = ("interaction-" + asset.item.id + "-" + option).replace(' ','_');
-                var name = ("interaction-" + asset.item.id).replace(' ','_');
+        dojo.forEach(data.options, function(option) {
+            var id = ("interaction-" + asset.item.id + "-" + option).replace(' ','_');
+            var name = ("interaction-" + asset.item.id).replace(' ','_');
 
-                var html = dojo.string.substitute('<p><label for="${0}">${1}</label></p>', [id, option]);
-                var p = dojo.place(html, asset.domNode);
-                // Checked
-                html = dojo.string.substitute('<input name="${2}" type="radio" id="${0}" value="${1}"/>', [id, option, name]);
-                var input = dojo.place(html, p, "first");
-                dojo.connect(input, "change", function() {
-                    var params = {
-                        type: asset.TRACKING_TYPE.LIKERT,
-                        response: option
-                    };
-                    asset.track(params, function(err) {
-                        // TODO: You can add feedback here
-                        err && console.log(err);
-                    });
+            var html = dojo.string.substitute('<p><label for="${0}">${1} ${3}% (${2})</label></p>', [id, option, asset.getOptionValue(option), asset.getOptionRatio(option)]);
+            var p = dojo.place(html, asset.domNode);
+            html = dojo.string.substitute('<input name="${2}" type="radio" id="${0}" value="${1}" ${3} ${4}/>', [id, option, name, myVote == option ? "checked" : "", myVote ? "disabled" : ""]);
+            var input = dojo.place(html, p, "first");
+            myVote === undefined && dojo.connect(input, "change", function() {
+                var params = {
+                    type: asset.TRACKING_TYPE.LIKERT,
+                    response: option
+                };
+                asset.track(params, function(err) {
+                    // TODO: You can add feedback here
+                    err && console.log(err);
                 });
-            });                
-        }
+            });
+        });
     }
 });
